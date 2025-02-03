@@ -20,20 +20,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="ExileCore2">
-      <HintPath>$(exilecore2Package)\ExileCore2.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="GameOffsets2">
-      <HintPath>$(exilecore2Package)\GameOffsets2.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.90.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ExileCore2">
+      <HintPath>..\..\..\ExileCore2.dll</HintPath>
+    </Reference>
+    <Reference Include="GameOffsets2">
+      <HintPath>..\..\..\GameOffsets2.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

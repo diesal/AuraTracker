@@ -24,8 +24,9 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
     private string _snapshot = "";
     private string _capturedBuffs = "";
     public override bool Initialise() {
+        Settings.InitializeDefaultAuras();
+        Settings.RemoveDuplicateAuras(); // Clean up existing duplicates
         UpdateCaptureBuffs();
-        // Load the custom font
 
         return true;
     }
@@ -195,6 +196,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         }
         _capturedBuffs = capturedBuffs.ToString();
     }
+
     public void CaptureBuffs() {
         foreach (var entity in GameController.Entities) {
             if (entity.Type != EntityType.Monster ||
@@ -212,30 +214,36 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         }
     }
 
-
     public void Snapshot() {
         var snapshot = new StringBuilder();
 
-        foreach (var entity in GameController.Entities) {
-            if (entity.Type != EntityType.Monster ||
-                (entity.Rarity != MonsterRarity.Rare && entity.Rarity != MonsterRarity.Magic && entity.Rarity != MonsterRarity.Unique) ||
-                (entity.Rarity == MonsterRarity.Unique && !Settings.SnapshotUnique) ||
-                (entity.Rarity == MonsterRarity.Rare && !Settings.SnapshotRare) ||
-                (entity.Rarity == MonsterRarity.Magic && !Settings.SnapshotMagic) ||
-                !entity.TryGetComponent<Render>(out var entityRender) ||
-                !entity.TryGetComponent<Buffs>(out var entityBuffs))
-                continue;
+        foreach (var entity in GameController.Entities)
+        {
+            if ((entity.Type == EntityType.Monster) || (entity.Type == EntityType.Player)) {
 
-            snapshot.AppendLine($"--| {entity.RenderName} | Rarity:{entity.Rarity}");
-            foreach (var buff in entityBuffs.BuffsList) {
-                var buffInfo = $"----| Buff: {buff.Name}";
-                if (buff.MaxTime > 0 && buff.MaxTime < 999) {
-                    buffInfo += $" | Duration: {buff.MaxTime}";
+                if ((entity.Type == EntityType.Monster) &&
+                    (entity.Rarity != MonsterRarity.Rare && entity.Rarity != MonsterRarity.Magic && entity.Rarity != MonsterRarity.Unique) ||
+                    (entity.Rarity == MonsterRarity.Unique && !Settings.SnapshotUnique) ||
+                    (entity.Rarity == MonsterRarity.Rare && !Settings.SnapshotRare) ||
+                    (entity.Rarity == MonsterRarity.Magic && !Settings.SnapshotMagic) ||
+                    !entity.TryGetComponent<Render>(out var entityRender) ||
+                    !entity.TryGetComponent<Buffs>(out var entityBuffs))
+                                    continue;
+
+                snapshot.AppendLine($"--| {entity.RenderName} | Rarity:{entity.Rarity}");
+                foreach (var buff in entityBuffs.BuffsList)
+                {
+                    var buffInfo = $"----| Buff: {buff.Name}";
+                    if (buff.MaxTime > 0 && buff.MaxTime < 999)
+                    {
+                        buffInfo += $" | Duration: {buff.MaxTime}";
+                    }
+                    if (buff.Timer > 0 && buff.Timer < 999)
+                    {
+                        buffInfo += $" | Left: {buff.Timer}";
+                    }
+                    snapshot.AppendLine(buffInfo);
                 }
-                if (buff.Timer > 0 && buff.Timer < 999) {
-                    buffInfo += $" | Left: {buff.Timer}";
-                }
-                snapshot.AppendLine(buffInfo);
             }
         }
         _snapshot = snapshot.ToString();

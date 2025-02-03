@@ -43,15 +43,23 @@ public sealed class AuraTrackerSettings : ISettings {
     public int BarSpacing = 0;
     public Vector4 BarBackgroundColor = new(0, 0, 0, 0.75f);
 
-    public List<AuraSettings> AuraSettingsList { get; set; } = new() {
-        new AuraSettings(false, "visual_archnemesis_mod_display_buff", "Unicorn Farts", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.51082253f, 0.51082253f, 0.51082253f, 1.0f)),
-        new AuraSettings(true, "monster_flask_drain_aura", "Drought", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.50980395f, 0.26666668f, 0.050980393f, 1.0f)),
-        new AuraSettings(true, "proximal_intangibility", "Intangibility", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.50980395f, 0.15686275f, 0.050980393f, 1.0f)),
-        new AuraSettings(true, "stun_display_buff", "Stunned", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.6666667f, 0.6392157f, 0.19607843f, 1.0f)),
-        new AuraSettings(true, "frozen", "Frozen", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.07058824f, 0.5921569f, 0.7058824f, 1.0f)),
-        new AuraSettings(false, "chilled", "Chilled", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.27450982f, 0.59607846f, 0.6666667f, 1.0f)),
-    };
+    public List<AuraSettings> AuraSettingsList { get; set; } = new();
     public List<SeenBuff> SeenBuffs { get; set; } = new ();
+
+    public void InitializeDefaultAuras()
+    {
+        if (AuraSettingsList.Count == 0)
+        {  // Only add defaults if list is empty
+            AuraSettingsList.AddRange(new List<AuraSettings> {
+            new AuraSettings(false, "visual_archnemesis_mod_display_buff", "Unicorn Farts", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.51082253f, 0.51082253f, 0.51082253f, 1.0f)),
+            new AuraSettings(true, "monster_flask_drain_aura", "Drought", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.50980395f, 0.26666668f, 0.050980393f, 1.0f)),
+            new AuraSettings(true, "proximal_intangibility", "Intangibility", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.50980395f, 0.15686275f, 0.050980393f, 1.0f)),
+            new AuraSettings(true, "stun_display_buff", "Stunned", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.6666667f, 0.6392157f, 0.19607843f, 1.0f)),
+            new AuraSettings(true, "frozen", "Frozen", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.07058824f, 0.5921569f, 0.7058824f, 1.0f)),
+            new AuraSettings(false, "chilled", "Chilled", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.27450982f, 0.59607846f, 0.6666667f, 1.0f)),
+        });
+        }
+    }
 
     public void AddAura() {
         AuraSettingsList.Add( new AuraSettings(true, "Name", "", Vector4.One, new Vector4(.5f, .5f, .5f, 1)) );
@@ -62,5 +70,11 @@ public sealed class AuraTrackerSettings : ISettings {
         }
     }
 
-
+    public void RemoveDuplicateAuras()
+    {
+        AuraSettingsList = AuraSettingsList
+            .GroupBy(aura => aura.Name)
+            .Select(g => g.First())
+            .ToList();
+    }
 }
