@@ -282,11 +282,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         // Cache the entities locally
         foreach (var entity in GetMonsters())
         {
-            if (entity.Type != EntityType.Monster ||
-                (entity.Rarity != MonsterRarity.Rare &&
-                 entity.Rarity != MonsterRarity.Magic &&
-                 entity.Rarity != MonsterRarity.Unique) ||
-                !entity.TryGetComponent<Buffs>(out var entityBuffs))
+            if (!entity.TryGetComponent<Buffs>(out var entityBuffs))
                 continue;
 
             foreach (var buff in entityBuffs.BuffsList)
