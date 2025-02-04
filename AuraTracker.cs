@@ -154,21 +154,24 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
             foreach (var auraSettings in matchedAuras) {
                 var entityBuff = entityBuffs.BuffsList.First(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal));
                 var displayText = auraSettings.DisplayName;
+
+                var stacksText = entityBuff.BuffStacks > 0 ? $" ({entityBuff.BuffStacks + 1})" : "";
+
                 var timerText = entityBuff.Timer > 0 && entityBuff.Timer < 99 ? $" {entityBuff.Timer:F1}s" : "";
-                var combinedText = displayText + timerText;
+                var combinedText = displayText + stacksText + timerText;
                 var textSize = Graphics.MeasureText(combinedText);
 
                 // Truncate text if it exceeds the maximum width
                 if (textSize.X > maxWidth) {
                     var ellipsis = "...";
-                    var ellipsisSize = Graphics.MeasureText(ellipsis + timerText);
+                    var ellipsisSize = Graphics.MeasureText(ellipsis + stacksText + timerText);
                     var availableWidth = maxWidth - ellipsisSize.X;
 
                     while (Graphics.MeasureText(displayText + timerText).X > availableWidth && displayText.Length > 0) {
                         displayText = displayText.Substring(0, displayText.Length - 1);
                     }
                     displayText += ellipsis;
-                    combinedText = displayText + timerText;
+                    combinedText = displayText + stacksText + timerText;
                     textSize = Graphics.MeasureText(combinedText);
                 }
 
