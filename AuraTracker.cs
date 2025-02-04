@@ -295,7 +295,10 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
                     UpdateCaptureBuffs();
 
                     if (Settings.CaptureBuffsSave && !string.IsNullOrEmpty(seenBuff.DisplayName))
+                    {
                         Settings.AddAura(seenBuff.Name, seenBuff.DisplayName, _defaultTextColor, _defaultBarColor);
+                        LogMessage($"Added new aura: {seenBuff.DisplayName}", 5f, Color.Green);
+                    }
                 }
             }
         }
