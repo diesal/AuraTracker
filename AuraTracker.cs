@@ -157,9 +157,9 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         var barInset = 1.0f;
 
         foreach (var entity in GetMonsters()) {
-            var screenPos = Camera.WorldToScreen(entity.Pos);
-            if (screenPos.X < 0 || screenPos.X > GameController.Window.GetWindowRectangle().Width ||
-                screenPos.Y < 0 || screenPos.Y > GameController.Window.GetWindowRectangle().Height)
+            var entityScreenCoords = Camera.WorldToScreen(entity.Pos);
+            if (entityScreenCoords.X < 0 || entityScreenCoords.X > GameController.Window.GetWindowRectangle().Width ||
+                entityScreenCoords.Y < 0 || entityScreenCoords.Y > GameController.Window.GetWindowRectangle().Height)
             {
                 // If the monster is off-screen, skip rendering
                 continue;
@@ -169,7 +169,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
             var matchedAuras = Settings.AuraList.Where(auraSettings => entityBuffs.BuffsList.Any(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal)) && auraSettings.Enabled).ToList();
             if (!matchedAuras.Any()) continue;
 
-            var entityScreenCoords = Camera.WorldToScreen(entity.Pos);
+            
             entityScreenCoords.X -= (int)(Settings.BarWidth / 2);
             foreach (var auraSettings in matchedAuras) {
                 var entityBuff = entityBuffs.BuffsList.First(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal));
