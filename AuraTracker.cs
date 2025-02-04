@@ -217,8 +217,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 
             foreach (var buff in entityBuffs.BuffsList) {
                 if (!Settings.SeenBuffs.Any(b => b.Name == buff.Name)) {
-                    var titleizedName = Titleize(buff.Name);
-                    var seenBuff = new SeenBuff(titleizedName, buff.DisplayName, buff.MaxTime);
+                    var seenBuff = new SeenBuff(buff.Name, buff.DisplayName, buff.MaxTime);
                     Settings.SeenBuffs.Add(seenBuff);
                     UpdateCaptureBuffs();
 
@@ -279,11 +278,4 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
     private IEnumerable<Entity> GetMonsters() {
         return GameController.Entities.Where(IsValidMonster);
     }
-
-    private string Titleize(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input)) return input;
-        return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.Replace("_", " ").ToLower());
-    }
-
 }
