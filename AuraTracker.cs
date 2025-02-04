@@ -19,6 +19,7 @@ namespace AuraTracker;
 public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 {
     private Camera Camera => GameController.IngameState.Camera;
+    private HashSet<string> _seenBuffNames = new HashSet<string>(StringComparer.Ordinal);
 
     private int TickCounter { get; set; }
     private string _snapshot = "";
@@ -30,8 +31,15 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         Settings.InitAuraList();
         Settings.RemoveDuplicateAuras(); // Clean up existing duplicates if there are any
         UpdateCaptureBuffs();
+        InitializeSeenBuffNames();
 
         return true;
+    }
+
+    private void InitializeSeenBuffNames()
+    {
+        foreach (var b in Settings.SeenBuffs)
+            _seenBuffNames.Add(b.Name);
     }
 
     private void DrawAura(Aura auraSettings, int index) {
@@ -215,17 +223,26 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         _capturedBuffs = capturedBuffs.ToString();
     }
 
-    public void CaptureBuffs() {
-        foreach (var entity in GameController.Entities) {
+    public void CaptureBuffs()
+    {
+        // Cache the entities locally
+        var entities = GameController.Entities;
+        foreach (var entity in entities)
+        {
             if (entity.Type != EntityType.Monster ||
-                (entity.Rarity != MonsterRarity.Rare && entity.Rarity != MonsterRarity.Magic && entity.Rarity != MonsterRarity.Unique) ||
+                (entity.Rarity != MonsterRarity.Rare &&
+                 entity.Rarity != MonsterRarity.Magic &&
+                 entity.Rarity != MonsterRarity.Unique) ||
                 !entity.TryGetComponent<Buffs>(out var entityBuffs))
                 continue;
 
-            foreach (var buff in entityBuffs.BuffsList) {
-                if (!Settings.SeenBuffs.Any(b => b.Name == buff.Name)) {
+            foreach (var buff in entityBuffs.BuffsList)
+            {
+                if (!_seenBuffNames.Contains(buff.Name))
+                {
                     var seenBuff = new SeenBuff(buff.Name, buff.DisplayName, buff.MaxTime);
                     Settings.SeenBuffs.Add(seenBuff);
+                    _seenBuffNames.Add(buff.Name);
                     UpdateCaptureBuffs();
 
                     if (Settings.CaptureBuffsSave && !string.IsNullOrEmpty(seenBuff.DisplayName))
