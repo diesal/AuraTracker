@@ -280,8 +280,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
     public void CaptureBuffs()
     {
         // Cache the entities locally
-        var entities = GameController.Entities;
-        foreach (var entity in entities)
+        foreach (var entity in GetMonsters())
         {
             if (entity.Type != EntityType.Monster ||
                 (entity.Rarity != MonsterRarity.Rare &&
@@ -354,6 +353,6 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
     }
 
     private IEnumerable<Entity> GetMonsters() {
-        return GameController.Entities.Where(IsValidMonster);
+        return GameController.EntityListWrapper.ValidEntitiesByType[EntityType.Monster].Where(IsValidMonster);
     }
 }
