@@ -42,13 +42,13 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         ImGui.InputText($"##AuraName{index}", ref auraSettings.Name, 100); ImGui.SameLine();
         if (ImGui.IsItemHovered()) {
             ImGui.BeginTooltip();
-            ImGui.Text("Aura Name. Use captured buffs to find the desired aura.");
+            ImGui.Text("Aura Name. Use captured auras to find the desired aura.");
             ImGui.EndTooltip();
         };
         ImGui.InputText($"##AuraDisplayName{index}", ref auraSettings.DisplayName, 100); ImGui.SameLine();
         if (ImGui.IsItemHovered()) {
             ImGui.BeginTooltip();
-            ImGui.Text("Name shown for the tracked buff in-game. Defaults to the buff name if not specified.");
+            ImGui.Text("Name shown for the tracked aura in-game. Defaults to the aura name if not specified.");
             ImGui.EndTooltip();
         }
         if (ImGui.Button($"Remove##{index}")) Settings.RemoveAura(index);
@@ -86,14 +86,14 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
             ImGui.Unindent();
         }
 
-        if (ImGuiUtils.CollapsingHeader("Captured Buffs", ref Settings.CaptureHeaderOpen)) {
+        if (ImGuiUtils.CollapsingHeader("Captured Auffs", ref Settings.CaptureHeaderOpen)) {
             ImGui.Indent();
-            ImGui.Checkbox("Capture Buffs", ref Settings.CaptureBuffs); ImGui.SameLine();
+            ImGui.Checkbox("Capture Auras", ref Settings.CaptureBuffs); ImGui.SameLine();
             if (ImGui.IsItemHovered()) {
                 ImGui.BeginTooltip();
-                ImGui.Text("Enable this option to capture buffs from entities.");
-                ImGui.Text("When enabled, the plugin will scan entities for buffs and record them.");
-                ImGui.Text("Captured buffs will be displayed in the text area below.");
+                ImGui.Text("Enable this option to capture auras from entities.");
+                ImGui.Text("When enabled, the plugin will scan entities for auras and record them.");
+                ImGui.Text("Captured auras will be displayed in the text area below.");
                 ImGui.Text("Use this feature to identify and track new auras.");
                 ImGui.EndTooltip();
             }
@@ -102,14 +102,14 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
             {
                 ImGui.BeginTooltip();
                 ImGui.Text("Enable this option to add captured auras to the list above.");
-                ImGui.Text("This will only add buffs that have a display name");
+                ImGui.Text("This will only add auras that have a display name");
                 ImGui.EndTooltip();
             }
             ImGui.PushItemWidth(100);
             ImGui.SliderInt("Capture rate", ref Settings.CaptureEveryXTicks, 10, 100); ImGui.SameLine();
             if (ImGui.IsItemHovered()) {
                 ImGui.BeginTooltip();
-                ImGui.Text("Set the interval (in ticks) for attmepting to captures new buffs");
+                ImGui.Text("Set the interval (in ticks) for attmepting to captures new Auras");
                 ImGui.EndTooltip();
             };
             ImGui.SliderInt("Height##Capture", ref Settings.CapturetHeight, 100, 1000);
@@ -118,7 +118,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
             ImGui.Unindent();
         }
 
-        if (ImGui.CollapsingHeader("Snapshot Buffs")) {
+        if (ImGui.CollapsingHeader("Snapshot Auras")) {
             ImGui.Indent();
             ImGui.Checkbox("Unique", ref Settings.SnapshotUnique); ImGui.SameLine();
             ImGui.Checkbox("Rare", ref Settings.SnapshotRare); ImGui.SameLine();
