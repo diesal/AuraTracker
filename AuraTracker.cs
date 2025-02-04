@@ -150,78 +150,124 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         }
     }
 
-    public override void Render() {
-        var shadowOffset = new Vector2(1, 1); // Offset for the shadow
+    public override void Render()
+    {
+        // Cache frequently used local variables
+        var shadowOffset = new Vector2(1, 1);
         var shadowColor = Color.Black;
-        var maxWidth = Settings.BarWidth - Settings.BarHPadding * 2;
-        var barInset = 1.0f;
 
-        foreach (var entity in GetMonsters()) {
+        var barWidth = Settings.BarWidth;
+        var barHPadding = Settings.BarHPadding;
+        var barVPadding = Settings.BarVPadding;
+        var barSpacing = Settings.BarSpacing;
+        var barInset = 1.0f;
+        var barBackgroundColor = ImGuiUtils.Vector4ToColor(Settings.BarBackgroundColor);
+
+        // The maximum text width, subtracting horizontal padding
+        var maxWidth = barWidth - barHPadding * 2;
+
+        // Cache window rectangle to skip off-screen entities
+        var windowRect = GameController.Window.GetWindowRectangle();
+        var windowWidth = windowRect.Width;
+        var windowHeight = windowRect.Height;
+
+        foreach (var entity in GetMonsters())
+        {
+            // Convert world coords to screen coords once per entity
             var entityScreenCoords = Camera.WorldToScreen(entity.Pos);
-            if (entityScreenCoords.X < 0 || entityScreenCoords.X > GameController.Window.GetWindowRectangle().Width ||
-                entityScreenCoords.Y < 0 || entityScreenCoords.Y > GameController.Window.GetWindowRectangle().Height)
+
+            // Skip if off-screen
+            if (entityScreenCoords.X < 0 || entityScreenCoords.X > windowWidth ||
+                entityScreenCoords.Y < 0 || entityScreenCoords.Y > windowHeight)
             {
-                // If the monster is off-screen, skip rendering
                 continue;
             }
 
-            if (!entity.TryGetComponent<Buffs>(out var entityBuffs)) continue;
-            var matchedAuras = Settings.AuraList.Where(auraSettings => entityBuffs.BuffsList.Any(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal)) && auraSettings.Enabled).ToList();
-            if (!matchedAuras.Any()) continue;
+            // Get Buffs component
+            if (!entity.TryGetComponent<Buffs>(out var entityBuffs))
+                continue;
 
-            
-            entityScreenCoords.X -= (int)(Settings.BarWidth / 2);
-            foreach (var auraSettings in matchedAuras) {
-                var entityBuff = entityBuffs.BuffsList.First(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal));
+            // Find matching auras in one pass
+            var matchedAuras = Settings.AuraList
+                .Where(auraSettings => auraSettings.Enabled &&
+                                       entityBuffs.BuffsList.Any(buff =>
+                                           string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal)))
+                .ToList();
+
+            if (!matchedAuras.Any())
+                continue;
+
+            // Center the bar on the monster's X position
+            entityScreenCoords.X -= (int)(barWidth / 2);
+
+            foreach (var auraSettings in matchedAuras)
+            {
+                var entityBuff = entityBuffs.BuffsList
+                    .First(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal));
+
                 var displayText = auraSettings.DisplayName;
-
                 var stacksText = entityBuff.BuffStacks > 0 ? $" ({entityBuff.BuffStacks + 1})" : "";
+                var timerText = entityBuff.Timer > 0 && entityBuff.Timer < 99
+                    ? $" {entityBuff.Timer:F1}s"
+                    : "";
 
-                var timerText = entityBuff.Timer > 0 && entityBuff.Timer < 99 ? $" {entityBuff.Timer:F1}s" : "";
+                // Combine for measuring & displaying
                 var combinedText = displayText + stacksText + timerText;
                 var textSize = Graphics.MeasureText(combinedText);
 
-                // Truncate text if it exceeds the maximum width
-                if (textSize.X > maxWidth) {
+                // Truncate if text exceeds the bar width
+                if (textSize.X > maxWidth)
+                {
                     var ellipsis = "...";
                     var ellipsisSize = Graphics.MeasureText(ellipsis + stacksText + timerText);
                     var availableWidth = maxWidth - ellipsisSize.X;
 
-                    while (Graphics.MeasureText(displayText + timerText).X > availableWidth && displayText.Length > 0) {
+                    // Keep chopping from the end until it fits
+                    while (Graphics.MeasureText(displayText + timerText).X > availableWidth &&
+                           displayText.Length > 0)
+                    {
                         displayText = displayText.Substring(0, displayText.Length - 1);
                     }
+
+                    // Re-append ellipsis and measure again
                     displayText += ellipsis;
                     combinedText = displayText + stacksText + timerText;
                     textSize = Graphics.MeasureText(combinedText);
                 }
 
-                // Calculate bar width
-                var barWidthMultiplier = 1.0f;
-                if (entityBuff.Timer > 0 && entityBuff.Timer < 99 && entityBuff.MaxTime < 99) {
+                // Calculate bar fill percentage
+                float barWidthMultiplier = 1.0f;
+                if (entityBuff.Timer > 0 && entityBuff.Timer < 99 && entityBuff.MaxTime < 99)
+                {
                     barWidthMultiplier = entityBuff.Timer / entityBuff.MaxTime;
                 }
 
-                // Bar background
-                var bgPos = entityScreenCoords; // Keep the original bar position
-                var bgSize = new Vector2(Settings.BarWidth, textSize.Y + Settings.BarVPadding * 2);
-                Graphics.DrawBox(bgPos, bgPos + bgSize, ImGuiUtils.Vector4ToColor(Settings.BarBackgroundColor));
+                // Draw bar background
+                var bgPos = entityScreenCoords;
+                var bgSize = new Vector2(barWidth, textSize.Y + barVPadding * 2);
+                Graphics.DrawBox(bgPos, bgPos + bgSize, barBackgroundColor);
 
-                // Bar
+                // Draw the colored fill portion
                 var barPos = new Vector2(bgPos.X + barInset, bgPos.Y + barInset);
-                var barSize = new Vector2(Settings.BarWidth - barInset * 2, bgSize.Y - barInset * 2);
-                int barWidth = (int)(barSize.X * barWidthMultiplier);
-                Graphics.DrawBox(barPos, new Vector2(barPos.X + barWidth, barPos.Y + barSize.Y), ImGuiUtils.Vector4ToColor(auraSettings.BarColor));
+                var barSize = new Vector2(barWidth - barInset * 2, bgSize.Y - barInset * 2);
+                int fillWidth = (int)(barSize.X * barWidthMultiplier);
+                Graphics.DrawBox(barPos, new Vector2(barPos.X + fillWidth, barPos.Y + barSize.Y),
+                                 ImGuiUtils.Vector4ToColor(auraSettings.BarColor));
 
-                // Draw the text with padding
-                var textPos = new Vector2(bgPos.X + Settings.BarHPadding, bgPos.Y - 1 + ((bgSize.Y - textSize.Y) / 2));
+                // Draw text, with shadow for visibility
+                var textPos = new Vector2(
+                    bgPos.X + barHPadding,
+                    bgPos.Y - 1 + ((bgSize.Y - textSize.Y) / 2)
+                );
                 Graphics.DrawText(combinedText, textPos + shadowOffset, shadowColor);
                 Graphics.DrawText(combinedText, textPos, ImGuiUtils.Vector4ToColor(auraSettings.TextColor));
 
-                // Update position
-                entityScreenCoords.Y += textSize.Y + Settings.BarVPadding * 2 - 1 + Settings.BarSpacing;
+                // Move downward for the next aura
+                entityScreenCoords.Y += textSize.Y + barVPadding * 2 - 1 + barSpacing;
             }
         }
     }
+
 
     public void UpdateCaptureBuffs() {
         var capturedBuffs = new StringBuilder();
