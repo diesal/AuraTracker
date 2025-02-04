@@ -89,7 +89,7 @@ public sealed class AuraTrackerSettings : ISettings {
         // Add aura only if doesn't already exist
         if (!AuraList.Any(aura => aura.Name == name))
         {
-            AuraList.Add(new Aura(false, name, displayName, textColor, barColor));
+            AuraList.Add(new Aura(true, name, displayName, textColor, barColor));
         }
     }
 
