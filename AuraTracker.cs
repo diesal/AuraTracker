@@ -27,14 +27,14 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
     private Vector4 _defaultBarColor = new Vector4(0.5f, 0.5f, 0.5f, 1);
 
     public override bool Initialise() {
-        Settings.InitializeDefaultAuras();
+        Settings.InitAuraList();
         Settings.RemoveDuplicateAuras(); // Clean up existing duplicates if there are any
         UpdateCaptureBuffs();
 
         return true;
     }
 
-    private void DrawAura(AuraSettings auraSettings, int index) {
+    private void DrawAura(Aura auraSettings, int index) {
         ImGuiUtils.Checkbox($"##EnableAura{index}", "Enable Aura", ref auraSettings.Enabled); ImGui.SameLine();
         ImGuiUtils.ColorSwatch($"Text Color ##{index}", ref auraSettings.TextColor); ImGui.SameLine();
         ImGuiUtils.ColorSwatch($"Bar Color ##{index}", ref auraSettings.BarColor); ImGui.SameLine();
@@ -81,7 +81,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 
         if (ImGuiUtils.CollapsingHeader("Tracked Auras", ref Settings.TrackedAurasHeaderOpen)) {
             ImGui.Indent();
-            for (int i = 0; i < Settings.AuraSettingsList.Count; i++) { DrawAura(Settings.AuraSettingsList[i], i); }
+            for (int i = 0; i < Settings.AuraList.Count; i++) { DrawAura(Settings.AuraList[i], i); }
             if (ImGui.Button("Add Aura")) { Settings.AddAura(); }
             ImGui.Unindent();
         }
@@ -146,7 +146,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 
         foreach (var entity in GetMonsters()) {
             if (!entity.TryGetComponent<Buffs>(out var entityBuffs)) continue;
-            var matchedAuras = Settings.AuraSettingsList.Where(auraSettings => entityBuffs.BuffsList.Any(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal)) && auraSettings.Enabled).ToList();
+            var matchedAuras = Settings.AuraList.Where(auraSettings => entityBuffs.BuffsList.Any(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal)) && auraSettings.Enabled).ToList();
             if (!matchedAuras.Any()) continue;
 
             var entityScreenCoords = Camera.WorldToScreen(entity.Pos);
