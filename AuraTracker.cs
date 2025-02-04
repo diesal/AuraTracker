@@ -23,9 +23,12 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 
     private string _snapshot = "";
     private string _capturedBuffs = "";
+    private Vector4 _defaultTextColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    private Vector4 _defaultBarColor = new Vector4(0.5f, 0.5f, 0.5f, 1);
+
     public override bool Initialise() {
         Settings.InitializeDefaultAuras();
-        Settings.RemoveDuplicateAuras(); // Clean up existing duplicates
+        Settings.RemoveDuplicateAuras(); // Clean up existing duplicates if there are any
         UpdateCaptureBuffs();
 
         return true;
@@ -92,6 +95,14 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
                 ImGui.Text("When enabled, the plugin will scan entities for buffs and record them.");
                 ImGui.Text("Captured buffs will be displayed in the text area below.");
                 ImGui.Text("Use this feature to identify and track new auras.");
+                ImGui.EndTooltip();
+            }
+            ImGui.Checkbox("Auto Add Captured", ref Settings.CaptureBuffsSave); ImGui.SameLine();
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.Text("Enable this option to add captured auras to the list above.");
+                ImGui.Text("This will only add buffs that have a display name");
                 ImGui.EndTooltip();
             }
             ImGui.PushItemWidth(100);
@@ -206,9 +217,13 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 
             foreach (var buff in entityBuffs.BuffsList) {
                 if (!Settings.SeenBuffs.Any(b => b.Name == buff.Name)) {
-                    var seenBuff = new SeenBuff(buff.Name, buff.DisplayName, buff.MaxTime); // Replace "Description" and "Source" with actual values if available
+                    var titleizedName = Titleize(buff.Name);
+                    var seenBuff = new SeenBuff(titleizedName, buff.DisplayName, buff.MaxTime);
                     Settings.SeenBuffs.Add(seenBuff);
                     UpdateCaptureBuffs();
+
+                    if (Settings.CaptureBuffsSave && !string.IsNullOrEmpty(seenBuff.DisplayName))
+                        Settings.AddAura(seenBuff.Name, seenBuff.DisplayName, _defaultTextColor, _defaultBarColor);
                 }
             }
         }
@@ -264,4 +279,11 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
     private IEnumerable<Entity> GetMonsters() {
         return GameController.Entities.Where(IsValidMonster);
     }
+
+    private string Titleize(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return input;
+        return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.Replace("_", " ").ToLower());
+    }
+
 }

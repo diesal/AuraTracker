@@ -33,6 +33,7 @@ public sealed class AuraTrackerSettings : ISettings {
 
     public bool CaptureHeaderOpen = true;
     public bool CaptureBuffs = false;
+    public bool CaptureBuffsSave = false;
     public int CaptureEveryXTicks = 10;
     public int CapturetHeight = 100;
 
@@ -64,6 +65,16 @@ public sealed class AuraTrackerSettings : ISettings {
     public void AddAura() {
         AuraSettingsList.Add( new AuraSettings(true, "Name", "", Vector4.One, new Vector4(.5f, .5f, .5f, 1)) );
     }
+
+    public void AddAura(string name, string displayName, Vector4 textColor, Vector4 barColor)
+    {
+        // Add aura only if doesn't already exist
+        if (!AuraSettingsList.Any(aura => aura.Name == name))
+        {
+            AuraSettingsList.Add(new AuraSettings(false, name, displayName, textColor, barColor));
+        }
+    }
+
     public void RemoveAura(int index) {
         if (index >= 0 && index < AuraSettingsList.Count) {
             AuraSettingsList.RemoveAt(index);
