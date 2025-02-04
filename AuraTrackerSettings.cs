@@ -75,7 +75,7 @@ public sealed class AuraTrackerSettings : ISettings {
             new Aura(true, "proximal_intangibility", "Intangibility", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.50980395f, 0.15686275f, 0.050980393f, 1.0f)),
             new Aura(true, "stun_display_buff", "Stunned", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.6666667f, 0.6392157f, 0.19607843f, 1.0f)),
             new Aura(true, "frozen", "Frozen", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.07058824f, 0.5921569f, 0.7058824f, 1.0f)),
-            new Aura(false, "chilled", "Chilled", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.27450982f, 0.59607846f, 0.6666667f, 1.0f)),
+            new Aura(true, "chilled", "Chilled", new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.27450982f, 0.59607846f, 0.6666667f, 1.0f)),
         });
         }
     }

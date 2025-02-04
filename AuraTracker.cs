@@ -20,7 +20,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 {
     private Camera Camera => GameController.IngameState.Camera;
 
-
+    private int TickCounter { get; set; }
     private string _snapshot = "";
     private string _capturedBuffs = "";
     private Vector4 _defaultTextColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -86,7 +86,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
             ImGui.Unindent();
         }
 
-        if (ImGuiUtils.CollapsingHeader("Captured Auffs", ref Settings.CaptureHeaderOpen)) {
+        if (ImGuiUtils.CollapsingHeader("Captured Auras", ref Settings.CaptureHeaderOpen)) {
             ImGui.Indent();
             ImGui.Checkbox("Capture Auras", ref Settings.CaptureBuffs); ImGui.SameLine();
             if (ImGui.IsItemHovered()) {
@@ -131,7 +131,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
             ImGui.Unindent();
         }
     }
-    private int TickCounter { get; set; }
+
     public override void Tick() {
         TickCounter++;
 
@@ -263,7 +263,6 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
         _snapshot = snapshot.ToString();
     }
 
-
     private bool IsValidMonster(Entity entity) {
         return
             entity.Type == EntityType.Monster &&
@@ -275,6 +274,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
              (entity.Rarity == MonsterRarity.Rare && Settings.TrackRares) ||
              (entity.Rarity == MonsterRarity.Unique && Settings.TrackUniques));
     }
+
     private IEnumerable<Entity> GetMonsters() {
         return GameController.Entities.Where(IsValidMonster);
     }
