@@ -134,8 +134,12 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 
     public override void Tick() {
         TickCounter++;
-
-        if (Settings.CaptureBuffs && TickCounter % Settings.CaptureEveryXTicks != 0) CaptureBuffs();
+        if (Settings.CaptureBuffs &&
+            !TheGame.TheGame.IsEscapeState &&
+            TickCounter % Settings.CaptureEveryXTicks != 0)
+        {
+            CaptureBuffs();
+        }
     }
 
     public override void Render() {
