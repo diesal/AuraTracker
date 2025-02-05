@@ -120,9 +120,9 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
                 ImGui.Text("Set the interval (in ticks) for attmepting to captures new Auras");
                 ImGui.EndTooltip();
             };
-            ImGui.SliderInt("Height##Capture", ref Settings.CapturetHeight, 100, 1000);
+            ImGui.SliderInt("Height##Capture", ref Settings.CaptureHeight, 100, 1000);
             ImGui.PopItemWidth();
-            ImGui.InputTextMultiline("##CaptureML", ref _capturedBuffs, 10000, new System.Numerics.Vector2(ImGui.GetContentRegionAvail().X, Settings.CapturetHeight), ImGuiInputTextFlags.ReadOnly);
+            ImGui.InputTextMultiline("##CaptureML", ref _capturedBuffs, 10000, new System.Numerics.Vector2(ImGui.GetContentRegionAvail().X, Settings.CaptureHeight), ImGuiInputTextFlags.ReadOnly);
             ImGui.Unindent();
         }
 

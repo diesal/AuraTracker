@@ -53,7 +53,7 @@ public sealed class AuraTrackerSettings : ISettings {
     public bool CaptureBuffs = false;
     public bool CaptureBuffsSave = false;
     public int CaptureEveryXTicks = 10;
-    public int CapturetHeight = 100;
+    public int CaptureHeight = 100;
 
     public bool BarHeaderOpen = true;
     public int BarHPadding = 4;
