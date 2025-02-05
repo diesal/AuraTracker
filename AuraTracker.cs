@@ -1,4 +1,4 @@
-﻿
+
 using ExileCore2;
 using ExileCore2.PoEMemory.Components;
 using ExileCore2.PoEMemory.MemoryObjects;
