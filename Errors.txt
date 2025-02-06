@@ -1,0 +1,3 @@
+Build failed:
+[2/4/2025 2:22:46 AM, C:\Program Files\dotnet\sdk\8.0.405\Microsoft.Common.CurrentVersion.targets(4857, 5)] MSB3027: Could not copy "obj\Debug\net8.0-windows\win-x64\AuraTracker.dll" to "H:\Games\Notepad2\Plugins\Temp\Sk-AuraTracker\AuraTracker.dll". Exceeded retry count of 10. Failed. The file is locked by: "Loader (62940)"
+[2/4/2025 2:22:46 AM, C:\Program Files\dotnet\sdk\8.0.405\Microsoft.Common.CurrentVersion.targets(4857, 5)] MSB3021: Unable to copy file "obj\Debug\net8.0-windows\win-x64\AuraTracker.dll" to "H:\Games\Notepad2\Plugins\Temp\Sk-AuraTracker\AuraTracker.dll". The process cannot access the file 'H:\Games\Notepad2\Plugins\Temp\Sk-AuraTracker\AuraTracker.dll' because it is being used by another process.
