@@ -206,20 +206,19 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
                     .First(buff => string.Equals(buff.Name, auraSettings.Name, StringComparison.Ordinal));
 
                 var displayText = auraSettings.DisplayName;
-                var stacksText = entityBuff.BuffStacks > 0 ? $" ({entityBuff.BuffStacks + 1})" : "";
                 var timerText = entityBuff.Timer > 0 && entityBuff.Timer < 99
                     ? $" {entityBuff.Timer:F1}s"
                     : "";
 
                 // Combine for measuring & displaying
-                var combinedText = displayText + stacksText + timerText;
+                var combinedText = displayText + timerText;
                 var textSize = Graphics.MeasureText(combinedText);
 
                 // Truncate if text exceeds the bar width
                 if (textSize.X > maxWidth)
                 {
                     var ellipsis = "...";
-                    var ellipsisSize = Graphics.MeasureText(ellipsis + stacksText + timerText);
+                    var ellipsisSize = Graphics.MeasureText(ellipsis + timerText);
                     var availableWidth = maxWidth - ellipsisSize.X;
 
                     // Keep chopping from the end until it fits
@@ -231,7 +230,7 @@ public class AuraTracker : BaseSettingsPlugin<AuraTrackerSettings>
 
                     // Re-append ellipsis and measure again
                     displayText += ellipsis;
-                    combinedText = displayText + stacksText + timerText;
+                    combinedText = displayText + timerText;
                     textSize = Graphics.MeasureText(combinedText);
                 }
 
