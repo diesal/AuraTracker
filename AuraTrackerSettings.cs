@@ -1,4 +1,4 @@
-﻿using ExileCore2.Shared.Interfaces;
+using ExileCore2.Shared.Interfaces;
 using ExileCore2.Shared.Nodes;
 using System.Numerics;
 
